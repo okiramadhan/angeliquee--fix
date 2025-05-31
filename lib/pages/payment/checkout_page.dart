@@ -18,10 +18,17 @@ class _CheckoutPageState extends State<CheckoutPage> {
   String? selectedService;
   TextEditingController voucherController = TextEditingController();
 
-  final List<String> courierOptions = ['jne', 'tiki', 'sicepat', 'jnt'];
-  final List<String> serviceOptions = ['REG', 'YES', 'ONS'];
+  final List<String> courierOptions = ['jne'];
+  final List<String> serviceOptions = ['REG'];
 
   final RxBool isLoading = false.obs;
+  final RxInt shippingCost = 0.obs;
+  final RxInt voucherDiscount = 0.obs;
+  final RxInt total = 0.obs;
+
+  final Map<String, Map<String, int>> shippingRates = {
+    'jne': {'REG': 140000},
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +40,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
     final locationController = Get.find<LocationController>();
     final checkoutController = Get.find<CheckoutController>();
 
-    int shippingCost = 0;
-    int voucherDiscount = 0;
-    int total = cartController.totalAmount + shippingCost - voucherDiscount;
+    total.value =
+        cartController.totalAmount + shippingCost.value - voucherDiscount.value;
 
     return Scaffold(
       appBar: AppBar(
@@ -50,10 +56,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    _buildShippingCard(),
+                    _buildShippingCard(cartController),
                     SizedBox(height: 20),
-                    _buildSummaryCard(
-                        cartController, shippingCost, voucherDiscount, total),
+                    _buildSummaryCard(cartController),
                   ],
                 ),
               ),
@@ -72,7 +77,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  Widget _buildShippingCard() {
+  Widget _buildShippingCard(CartController cartController) {
     return Card(
       color: Colors.white,
       elevation: 2,
@@ -92,7 +97,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   .map((e) =>
                       DropdownMenuItem(value: e, child: Text(e.toUpperCase())))
                   .toList(),
-              onChanged: (value) => setState(() => selectedCourier = value),
+              onChanged: (value) {
+                setState(() {
+                  selectedCourier = value;
+                  _updateShipping(cartController);
+                });
+              },
             ),
             SizedBox(height: 12),
             DropdownButtonFormField<String>(
@@ -105,7 +115,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
               items: serviceOptions
                   .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                   .toList(),
-              onChanged: (value) => setState(() => selectedService = value),
+              onChanged: (value) {
+                setState(() {
+                  selectedService = value;
+                  _updateShipping(cartController);
+                });
+              },
             ),
             SizedBox(height: 12),
             TextField(
@@ -117,6 +132,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 suffixIcon:
                     Icon(Icons.card_giftcard, color: AppColors.mainColor),
               ),
+              onChanged: (value) {
+                voucherDiscount.value =
+                    value.trim().toLowerCase() == "diskon5" ? 5000 : 0;
+                total.value = cartController.totalAmount +
+                    shippingCost.value -
+                    voucherDiscount.value;
+              },
             ),
           ],
         ),
@@ -124,28 +146,38 @@ class _CheckoutPageState extends State<CheckoutPage> {
     );
   }
 
-  Widget _buildSummaryCard(CartController cartController, int shippingCost,
-      int voucherDiscount, int total) {
-    return Card(
-      color: Colors.white,
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-        child: Column(
-          children: [
-            _checkoutRow("Subtotal", "Rp ${cartController.totalAmount}"),
-            SizedBox(height: 8),
-            _checkoutRow("Ongkos Kirim", "Rp $shippingCost"),
-            SizedBox(height: 8),
-            _checkoutRow("Diskon Voucher", "- Rp $voucherDiscount"),
-            Divider(thickness: 1, height: 24),
-            _checkoutRow("Total", "Rp $total",
-                isBold: true, valueColor: AppColors.mainColor),
-          ],
-        ),
-      ),
-    );
+  void _updateShipping(CartController cartController) {
+    if (selectedCourier != null && selectedService != null) {
+      final cost = shippingRates[selectedCourier!]?[selectedService!] ?? 0;
+      shippingCost.value = cost;
+      total.value = cartController.totalAmount +
+          shippingCost.value -
+          voucherDiscount.value;
+    }
+  }
+
+  Widget _buildSummaryCard(CartController cartController) {
+    return Obx(() => Card(
+          color: Colors.white,
+          elevation: 2,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+            child: Column(
+              children: [
+                _checkoutRow("Subtotal", "Rp ${cartController.totalAmount}"),
+                SizedBox(height: 8),
+                _checkoutRow("Ongkos Kirim", "Rp ${shippingCost.value}"),
+                SizedBox(height: 8),
+                _checkoutRow("Diskon Voucher", "- Rp ${voucherDiscount.value}"),
+                Divider(thickness: 1, height: 24),
+                _checkoutRow("Total", "Rp ${total.value}",
+                    isBold: true, valueColor: AppColors.mainColor),
+              ],
+            ),
+          ),
+        ));
   }
 
   Widget _buildBottomButton(

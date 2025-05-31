@@ -22,7 +22,7 @@ class CartController extends GetxController {
     );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      Get.snackbar("Berhasil", "Produk ditambahkan ke keranjang server");
+      Get.snackbar("Berhasil", "Produk ditambahkan");
     } else {
       Get.snackbar("Gagal", "Gagal tambah ke server: ${response.bodyString}");
     }
