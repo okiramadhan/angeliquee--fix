@@ -38,7 +38,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _loadResources();
-    _clearOldCart(); // Tambahkan ini
+    _clearOldCart();
     controller =
     AnimationController(vsync: this, duration: const Duration(seconds: 2))
       ..forward();

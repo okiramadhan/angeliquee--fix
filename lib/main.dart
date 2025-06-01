@@ -12,12 +12,42 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _initialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initApp();
+  }
+
+  Future<void> _initApp() async {
+    await Future.delayed(Duration(milliseconds: 200));
+ 
     Get.find<CartController>().getCartData();
+
+    setState(() {
+      _initialized = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_initialized) {
+      return const MaterialApp(
+        home: Scaffold(
+          body: Center(child: CircularProgressIndicator()),
+        ),
+      );
+    }
+
     return GetBuilder<PopularProductController>(builder: (_) {
       return GetBuilder<RecommendedProductController>(builder: (_) {
         return GetMaterialApp(
@@ -25,7 +55,6 @@ class MyApp extends StatelessWidget {
           title: 'Angelique Attire App',
           initialRoute: RouteHelper.getSplashPage(),
           getPages: RouteHelper.routes,
-          // home: SignInPage(),
         );
       });
     });

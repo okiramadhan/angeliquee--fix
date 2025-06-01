@@ -25,7 +25,6 @@ class _AccountPageState extends State<AccountPage> {
     bool _userLoggedIn = Get.find<AuthController>().userLoggedIn();
     if (_userLoggedIn) {
       Get.find<UserController>().getUserInfo();
-      Get.find<LocationController>().getAddressList();
     }
   }
 

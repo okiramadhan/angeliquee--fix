@@ -51,6 +51,11 @@ class AuthController extends GetxController implements GetxService {
       String token = response.body['data']['token']['token'];
       await authRepo.saveUserToken(token); // Simpan & update header
       responseModel = ResponseModel(true, "Login berhasil");
+
+      if (Get.isRegistered<LocationController>()) {
+      await Get.find<LocationController>().getAddressList();
+    }
+    
     } else {
       responseModel = ResponseModel(false, response.statusText ?? "Login gagal");
     }
