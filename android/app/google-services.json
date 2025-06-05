@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "214114158270",
+    "project_id": "angelique-ecommerce",
+    "storage_bucket": "angelique-ecommerce.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:214114158270:android:10b4b2d153b1841bec40ef",
+        "android_client_info": {
+          "package_name": "com.example.angeliquee"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCyVh2crUDGup1yK2mzySxIjdR2w6mPea0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

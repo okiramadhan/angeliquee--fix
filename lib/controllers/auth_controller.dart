@@ -1,4 +1,6 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_application_1/controllers/location_controller.dart';
+import 'package:flutter_application_1/controllers/notification_controller.dart';
 import 'package:flutter_application_1/models/address_model.dart';
 import 'package:flutter_application_1/routes/route_helper.dart';
 import 'package:get/get.dart';
@@ -47,9 +49,16 @@ class AuthController extends GetxController implements GetxService {
     Response response = await authRepo.login(email, password);
     late ResponseModel responseModel;
     if (response.statusCode == 200 && response.body['data'] != null) {
-      // Ambil token dari field yang benar!
       String token = response.body['data']['token']['token'];
-      await authRepo.saveUserToken(token); // Simpan & update header
+      await authRepo.saveUserToken(token); 
+      apiClient.updateHeader(token);
+       String? fcmToken = await FirebaseMessaging.instance.getToken();
+    if (fcmToken != null) {
+      if(!Get.isRegistered<NotificationController>()) {
+        Get.put(NotificationController(notificationRepo: Get.find()));
+      }
+      await Get.find<NotificationController>().sendTokenToServer(fcmToken);
+    }
       responseModel = ResponseModel(true, "Login berhasil");
 
       if (Get.isRegistered<LocationController>()) {

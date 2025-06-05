@@ -25,7 +25,8 @@ class AppConstants {
   //cart
   static const String CART_URI = "/users/cart";
 
-
+  //notification
+  static const String DEVICE_TOKEN_URI = '/notification/device_token';
 
   //payment
   static const String MIDTRANS_BASE_URL = "https://app.midtrans.com/snap/v2/vtweb";

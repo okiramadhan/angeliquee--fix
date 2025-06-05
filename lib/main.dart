@@ -1,5 +1,8 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/controllers/cart_controller.dart';
+import 'package:flutter_application_1/controllers/notification_controller.dart';
 import 'package:flutter_application_1/controllers/popular_product_controller.dart';
 import 'package:flutter_application_1/controllers/recommended_product_controller.dart';
 import 'package:flutter_application_1/routes/route_helper.dart';
@@ -8,7 +11,9 @@ import 'helper/dependencies.dart' as dep;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   await dep.init();
+
   runApp(const MyApp());
 }
 
@@ -30,7 +35,14 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _initApp() async {
     await Future.delayed(Duration(milliseconds: 200));
- 
+
+    NotificationSettings settings = await FirebaseMessaging.instance.requestPermission();
+    print('Notification permission status: ${settings.authorizationStatus}');
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Foreground message: ${message.notification?.title}');
+    });
+
     Get.find<CartController>().getCartData();
 
     setState(() {
