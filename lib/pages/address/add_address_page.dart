@@ -101,6 +101,17 @@ class _AddAddressPageState extends State<AddAddressPage> {
                   ),
                   child: Row(
                     children: [
+                      GestureDetector(
+                        onTap: () {
+                          Get.back();
+                        },
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: Dimensions.iconSize24,
+                        ),
+                      ),
+                      SizedBox(width: Dimensions.width15),
                       CircleAvatar(
                         backgroundColor: Colors.white,
                         radius: Dimensions.radius30,

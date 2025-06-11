@@ -170,7 +170,7 @@ class _AccountPageState extends State<AccountPage> {
                                           .last
                                           .address,
                                   color: AppColors.yellowColor,
-                                  onTap: () => Get.offNamed(
+                                  onTap: () => Get.toNamed(
                                       RouteHelper.getAddressPage()),
                                 ),
                                 _accountMenuTile(
@@ -233,7 +233,8 @@ class _AccountPageState extends State<AccountPage> {
           radius: Dimensions.radius20,
           child: Icon(icon, color: color, size: Dimensions.iconSize24),
         ),
-        title: Text(title, style: TextStyle(fontSize: Dimensions.font16)),
+        title: Text(title,
+            style: TextStyle(fontSize: Dimensions.font16, color: Colors.black)),
         trailing: onTap != null
             ? Icon(Icons.arrow_forward_ios, size: Dimensions.iconSize16)
             : null,

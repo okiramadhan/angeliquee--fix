@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/controllers/popular_product_controller.dart';
 import 'package:flutter_application_1/controllers/recommended_product_controller.dart';
+import 'package:flutter_application_1/pages/home/product_search_delegate.dart';
 import 'package:flutter_application_1/pages/home/shop_page_body.dart';
 import 'package:flutter_application_1/utils/colors.dart';
 import 'package:flutter_application_1/utils/dimensions.dart';
@@ -53,19 +54,24 @@ class _MainShopPageState extends State<MainShopPage> {
                       )
                     ],
                   ),
-                  Center(
-                    child: Container(
-                      width: Dimensions.height45,
-                      height: Dimensions.height45,
-                      decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.circular(Dimensions.radius15),
-                        color: AppColors.mainColor,
-                      ),
-                      child: Icon(
-                        Icons.search,
-                        color: Colors.white,
-                        size: Dimensions.iconSize24,
+                  GestureDetector(
+                    onTap: () {
+                      showSearch(context: context, delegate: ProductSearchDelegate());
+                    },
+                    child: Center(
+                      child: Container(
+                        width: Dimensions.height45,
+                        height: Dimensions.height45,
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(Dimensions.radius15),
+                          color: AppColors.mainColor,
+                        ),
+                        child: Icon(
+                          Icons.search,
+                          color: Colors.white,
+                          size: Dimensions.iconSize24,
+                        ),
                       ),
                     ),
                   )

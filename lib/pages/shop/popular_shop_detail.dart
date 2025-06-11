@@ -37,10 +37,9 @@ class PopularShopDetail extends StatelessWidget {
                   decoration: BoxDecoration(
                       image: DecorationImage(
                           image: NetworkImage(
-                            product.img != null && product.img!.isNotEmpty
-                                ? product.img!
-                                : "https://via.placeholder.com/150"
-                          ),
+                              product.img != null && product.img!.isNotEmpty
+                                  ? product.img!
+                                  : "https://via.placeholder.com/150"),
                           fit: BoxFit.cover)),
                 )),
             Positioned(
@@ -128,8 +127,9 @@ class PopularShopDetail extends StatelessWidget {
                         ),
                         Expanded(
                           child: SingleChildScrollView(
-                            child:
-                                ExandableTextWidget(text: product.description ?? "Tidak ada deskripsi"),
+                            child: ExandableTextWidget(
+                                text: product.description ??
+                                    "Tidak ada deskripsi"),
                           ),
                         ),
                       ],

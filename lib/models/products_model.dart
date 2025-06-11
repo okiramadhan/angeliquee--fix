@@ -32,7 +32,9 @@ class ProductModel {
     rawUrl = rawUrl.replaceFirst("https://dev-api.cakrawaladzikrateknologi.com/api", "");
   }
 
-  img = rawUrl;
+  img = rawUrl.startsWith('http') 
+    ? rawUrl 
+    : "https://dev-api.cakrawaladzikrateknologi.com$rawUrl";
 } else {
   img = null;
 }
