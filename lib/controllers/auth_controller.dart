@@ -1,6 +1,9 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_application_1/controllers/cart_controller.dart';
+import 'package:flutter_application_1/controllers/checkout_controller.dart';
 import 'package:flutter_application_1/controllers/location_controller.dart';
 import 'package:flutter_application_1/controllers/notification_controller.dart';
+import 'package:flutter_application_1/data/repository/notification_repo.dart';
 import 'package:flutter_application_1/models/address_model.dart';
 import 'package:flutter_application_1/routes/route_helper.dart';
 import 'package:get/get.dart';
@@ -26,7 +29,7 @@ class AuthController extends GetxController implements GetxService {
     _isLoading = true;
     update();
     Response response = await authRepo.registration(signUpBody);
-    print(response.body); 
+    print(response.body);
     late ResponseModel responseModel;
     if (response.statusCode == 200 && response.body['status'] == true) {
       final token = response.body['data']['token'];
@@ -50,23 +53,29 @@ class AuthController extends GetxController implements GetxService {
     late ResponseModel responseModel;
     if (response.statusCode == 200 && response.body['data'] != null) {
       String token = response.body['data']['token']['token'];
-      await authRepo.saveUserToken(token); 
+      await authRepo.saveUserToken(token);
       apiClient.updateHeader(token);
-       String? fcmToken = await FirebaseMessaging.instance.getToken();
-    if (fcmToken != null) {
-      if(!Get.isRegistered<NotificationController>()) {
-        Get.put(NotificationController(notificationRepo: Get.find()));
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken != null) {
+        if (!Get.isRegistered<NotificationController>()) {
+  try {
+    Get.lazyPut(() => NotificationRepo(apiClient: Get.find()));
+    Get.put(NotificationController(notificationRepo: Get.find()));
+  } catch (e) {
+    print("Failed to register NotificationRepo/Controller: $e");
+  }
+}
+await Get.find<NotificationController>().sendTokenToServer(fcmToken);
+
       }
-      await Get.find<NotificationController>().sendTokenToServer(fcmToken);
-    }
       responseModel = ResponseModel(true, "Login berhasil");
 
       if (Get.isRegistered<LocationController>()) {
-      await Get.find<LocationController>().getAddressList();
-    }
-    
+        await Get.find<LocationController>().getAddressList();
+      }
     } else {
-      responseModel = ResponseModel(false, response.statusText ?? "Login gagal");
+      responseModel =
+          ResponseModel(false, response.statusText ?? "Login gagal");
     }
     _isLoading = false;
     update();
@@ -74,23 +83,23 @@ class AuthController extends GetxController implements GetxService {
   }
 
   Future<void> getUserInfo() async {
-  _isLoading = true;
-  update();
-  Response response = await authRepo.getUserInfo();
-  if (response.statusCode == 200 && response.body['data'] != null) {
-    _userModel = UserModel.fromJson(response.body['data']);
-    // Ambil token baru jika ada di response user info
-    if (response.body['data']['token'] != null &&
-        response.body['data']['token']['token'] != null) {
-      String newToken = response.body['data']['token']['token'];
-      await authRepo.saveUserToken(newToken); // update header & simpan token baru
+    _isLoading = true;
+    update();
+    Response response = await authRepo.getUserInfo();
+    if (response.statusCode == 200 && response.body['data'] != null) {
+      _userModel = UserModel.fromJson(response.body['data']);
+      if (response.body['data']['token'] != null &&
+          response.body['data']['token']['token'] != null) {
+        String newToken = response.body['data']['token']['token'];
+        await authRepo
+            .saveUserToken(newToken); 
+      }
+    } else {
+      print("Gagal memuat user info: ${response.statusText}");
     }
-  } else {
-    print("Gagal memuat user info: ${response.statusText}");
+    _isLoading = false;
+    update();
   }
-  _isLoading = false;
-  update();
-}
 
   bool userLoggedIn() {
     return authRepo.userLoggedIn();
@@ -100,14 +109,25 @@ class AuthController extends GetxController implements GetxService {
     return authRepo.clearSharedData();
   }
 
-Future<void> logout() async {
-  final locationController = Get.find<LocationController>();
-  for (var address in List<AddressModel>.from(locationController.addressList)) {
-    await locationController.deleteAddress(address.id);
+  Future<void> logout() async {
+    final locationController = Get.find<LocationController>();
+    for (var address
+        in List<AddressModel>.from(locationController.addressList)) {
+      await locationController.deleteAddress(address.id);
+    }
+
+    await authRepo.clearUserToken();
+    clearSharedData();
+
+    locationController.clearAddressList();
+
+    if (Get.isRegistered<CartController>()) {
+      Get.find<CartController>().clear();
+    }
+
+    if (Get.isRegistered<CheckoutController>()) {
+      Get.find<CheckoutController>().clearCheckout();
+    }
+    Get.offAllNamed(RouteHelper.getSignInPage());
   }
-  await authRepo.clearUserToken();
-  clearSharedData();
-  locationController.clearAddressList(); 
-  Get.offAllNamed(RouteHelper.getSignInPage());
-}
 }
