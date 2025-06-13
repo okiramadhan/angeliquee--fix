@@ -128,8 +128,9 @@ class PopularShopDetail extends StatelessWidget {
                         Expanded(
                           child: SingleChildScrollView(
                             child: ExandableTextWidget(
-                                text: product.description ??
-                                    "Tidak ada deskripsi"),
+                              text: removeHtmlTags(
+                                  product.description ?? "Tidak ada deskripsi"),
+                            ),
                           ),
                         ),
                       ],

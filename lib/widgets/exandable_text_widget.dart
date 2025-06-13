@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_application_1/utils/colors.dart';
@@ -77,4 +76,9 @@ class _ExandableTextWidgetState extends State<ExandableTextWidget> {
             ),
     );
   }
+}
+
+String removeHtmlTags(String htmlText) {
+  final regex = RegExp(r'<[^>]*>', multiLine: true, caseSensitive: true);
+  return htmlText.replaceAll(regex, '');
 }

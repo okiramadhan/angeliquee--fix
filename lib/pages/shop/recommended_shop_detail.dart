@@ -21,7 +21,10 @@ class RecommendedShopDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var reversedRecommendedList = Get.find<RecommendedProductController>().recommendedProductList.reversed.toList();
+    var reversedRecommendedList = Get.find<RecommendedProductController>()
+        .recommendedProductList
+        .reversed
+        .toList();
     var product =
         Get.find<RecommendedProductController>().recommendedProductList[pageId];
     Get.find<PopularProductController>()
@@ -100,7 +103,8 @@ class RecommendedShopDetail extends StatelessWidget {
                       )),
                   child: Center(
                       child: BigText(
-                          size: Dimensions.font26, text: product.name ?? "Produk Tanpa Nama")),
+                          size: Dimensions.font26,
+                          text: product.name ?? "Produk Tanpa Nama")),
                 )),
             pinned: true,
             backgroundColor: AppColors.yellowColor,
@@ -121,7 +125,10 @@ class RecommendedShopDetail extends StatelessWidget {
               Container(
                 margin: EdgeInsets.only(
                     left: Dimensions.width20, right: Dimensions.width20),
-                child: ExandableTextWidget(text: product.description ?? "Tidak ada deskripsi"),
+                child: ExandableTextWidget(
+                  text: removeHtmlTags(
+                      product.description ?? "Tidak ada deskripsi"),
+                ),
               )
             ],
           )),
@@ -152,7 +159,8 @@ class RecommendedShopDetail extends StatelessWidget {
                         icon: Icons.remove),
                   ),
                   BigText(
-                    text: "\$ ${product.price ?? 0} x ${controller.inCartItems}",
+                    text:
+                        "\$ ${product.price ?? 0} x ${controller.inCartItems}",
                     color: AppColors.mainBlacklalor,
                     size: Dimensions.font26,
                   ),

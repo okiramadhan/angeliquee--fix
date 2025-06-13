@@ -8,6 +8,7 @@ import 'package:flutter_application_1/routes/route_helper.dart';
 import 'package:flutter_application_1/utils/colors.dart';
 import 'package:flutter_application_1/utils/dimensions.dart';
 import 'package:flutter_application_1/widgets/app_text_field.dart';
+import 'package:flutter_application_1/widgets/auth_card.dart';
 import 'package:flutter_application_1/widgets/big_text.dart';
 import 'package:get/get.dart';
 
@@ -18,6 +19,7 @@ class SignInPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var emailController = TextEditingController();
     var passwordController = TextEditingController();
+
     void _login(AuthController authController) {
       String email = emailController.text.trim();
       String password = passwordController.text.trim();
@@ -45,125 +47,104 @@ class SignInPage extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 243, 237, 221),
       body: GetBuilder<AuthController>(builder: (authController) {
         return !authController.isLoading
-            ? SingleChildScrollView(
-                physics: BouncingScrollPhysics(),
-                child: Column(
-                  children: [
-                    SizedBox(height: Dimensions.screenHeight * 0.05),
-                    Container(
-                      height: Dimensions.screenHeight * 0.25,
-                      child: Center(
-                        child: CircleAvatar(
-                          backgroundColor: Colors.white,
-                          radius: 80,
-                          backgroundImage: AssetImage("assets/images/logo.jpg"),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(left: Dimensions.width20),
-                      width: double.maxFinite,
+            ? Container(
+                width: double.infinity,
+                height: double.infinity,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [AppColors.mainColor, AppColors.yellowColor],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: AuthCard(
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text("Hello!",
-                              style: TextStyle(
-                                  fontSize: Dimensions.font20 * 3 +
-                                      Dimensions.font20 / 2,
-                                  fontWeight: FontWeight.bold,
-                                  fontStyle: FontStyle.italic)),
-                          Text("Sign into your account",
-                              style: TextStyle(
+                          CircleAvatar(
+                            backgroundColor: Colors.white,
+                            radius: 48,
+                            backgroundImage: AssetImage("assets/images/logo.jpg"),
+                          ),
+                          SizedBox(height: Dimensions.height20),
+                          Text(
+                            "Welcome Back!",
+                            style: TextStyle(
+                              fontSize: Dimensions.font26,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.mainColor,
+                            ),
+                          ),
+                          SizedBox(height: Dimensions.height10),
+                          AppTextField(
+                            textController: emailController,
+                            hintText: "Email",
+                            icon: Icons.email,
+                          ),
+                          SizedBox(height: Dimensions.height20),
+                          AppTextField(
+                            textController: passwordController,
+                            hintText: "Password",
+                            icon: Icons.lock,
+                            isObscure: true,
+                          ),
+                          SizedBox(height: Dimensions.height20),
+                          SizedBox(
+                            width: double.infinity,
+                            height: Dimensions.height45,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.mainColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.circular(Dimensions.radius15),
+                                ),
+                                elevation: 2,
+                              ),
+                              onPressed: () => _login(authController),
+                              child: Text(
+                                "Sign In",
+                                style: TextStyle(
+                                  color: Colors.white,
                                   fontSize: Dimensions.font20,
-                                  color: Colors.grey[500])),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: Dimensions.height20),
-                    AppTextField(
-                        textController: emailController,
-                        hintText: "Email",
-                        icon: Icons.email),
-                    SizedBox(height: Dimensions.height20),
-                    AppTextField(
-                      textController: passwordController,
-                      hintText: "Password",
-                      icon: Icons.password_sharp,
-                      isObscure: true,
-                    ),
-                    SizedBox(height: Dimensions.height20),
-                    Padding(
-                      padding: EdgeInsets.only(right: Dimensions.width20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Expanded(child: Container()),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: Dimensions.height10),
                           RichText(
                             text: TextSpan(
-                              text: "Sign into your account",
+                              text: "Don't have an account?",
                               style: TextStyle(
-                                color: Colors.grey[500],
+                                color: Colors.grey[600],
                                 fontSize: Dimensions.font16,
                               ),
+                              children: [
+                                TextSpan(
+                                  text: " Create",
+                                  style: TextStyle(
+                                    color: AppColors.mainBlacklalor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => Get.to(() => SignUpPage(),
+                                        transition: Transition.fade),
+                                ),
+                              ],
                             ),
                           ),
-                          SizedBox(
-                            width: Dimensions.width20,
-                          )
                         ],
                       ),
                     ),
-                    SizedBox(height: Dimensions.screenHeight * 0.05),
-                    GestureDetector(
-                      onTap: () {
-                        _login(authController);
-                      },
-                      child: Container(
-                        width: Dimensions.screenWidth / 2,
-                        height: Dimensions.screenHeight / 13,
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              BorderRadius.circular(Dimensions.radius30),
-                          color: AppColors.mainColor,
-                        ),
-                        child: Center(
-                          child: BigText(
-                            text: "Sign In",
-                            size: Dimensions.font20 + Dimensions.font20 / 2,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: Dimensions.screenHeight * 0.05),
-                    RichText(
-                      text: TextSpan(
-                          text: "Don't have an account?",
-                          style: TextStyle(
-                            color: Colors.grey[500],
-                            fontSize: Dimensions.font20,
-                          ),
-                          children: [
-                            TextSpan(
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () => Get.to(() => SignUpPage(),
-                                    transition: Transition.fade),
-                              text: " Create",
-                              style: TextStyle(
-                                color: AppColors.mainBlacklalor,
-                                fontSize: Dimensions.font20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ]),
-                    ),
-                  ],
+                  ),
                 ),
               )
-            : CustomLoader();
+            : const CustomLoader();
       }),
     );
   }
